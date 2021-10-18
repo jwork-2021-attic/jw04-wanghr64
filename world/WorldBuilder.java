@@ -102,9 +102,9 @@ public class WorldBuilder {
         for (int i = 0; i < this.width; ++i)
             for (int j = 0; j < this.height; ++j)
                 this.tiles[i][j] = Tile.WALL;
-        this.tiles[0][0] = Tile.FLOOR;
         this.tiles[this.width - 1][this.height - 1] = Tile.FLOOR;
         dfsBuilder(this.width - 1, this.height - 2, 0, 1);
+        this.tiles[0][1] = Tile.FLOOR;
         return this;
     }
 
@@ -116,7 +116,7 @@ public class WorldBuilder {
     private void dfsBuilder(int x, int y, int dstX, int dstY) {
         visited[x][y] = true;
         this.tiles[x][y] = Tile.FLOOR;
-        if (x == dstX && y == dstY + 1)
+        if (x == dstX + 1 && y == dstY)
             return;
 
         Collections.shuffle(ds);
@@ -125,7 +125,6 @@ public class WorldBuilder {
             int yy = y + d[1];
             if (xx > 0 && xx < this.width - 1 && yy > 0 && yy < this.height - 1 && !visited[xx][yy] && check(xx, yy)) {
                 visited[xx][yy] = true;
-                this.tiles[xx][yy] = Tile.FLOOR;
                 dfsBuilder(xx, yy, dstX, dstY);
             }
         }
