@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  *
@@ -36,6 +37,7 @@ public class PlayScreen implements Screen {
     private int screenHeight;
     private List<String> messages;
     private List<String> oldMessages;
+    private List<int[]> route;
 
     public PlayScreen() {
         this.screenWidth = 80;
@@ -46,10 +48,11 @@ public class PlayScreen implements Screen {
 
         CreatureFactory creatureFactory = new CreatureFactory(this.world);
         createCreatures(creatureFactory);
+        route = new MazeRouter(world, 0, 1, 89, 29).getRoute();
     }
 
     private void createCreatures(CreatureFactory creatureFactory) {
-        this.player = creatureFactory.newPlayer(this.messages);
+        this.player = creatureFactory.newPlayer(this.messages, 0, 1);
 
         for (int i = 0; i < 8; i++) {
             creatureFactory.newFungus();
@@ -83,6 +86,14 @@ public class PlayScreen implements Screen {
                 }
             }
         }
+
+        for (int[] r : route) {
+            int xx = r[0];
+            int yy = r[1];
+            if (xx >= left && xx < left + screenWidth && yy >= top && yy < top + screenHeight)
+                terminal.write(world.glyph(xx, yy), xx - left, yy - top, Color.PINK);
+        }
+
         // Creatures can choose their next action now
         world.update();
     }
