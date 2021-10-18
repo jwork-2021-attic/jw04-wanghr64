@@ -102,7 +102,6 @@ public class WorldBuilder {
         for (int i = 0; i < this.width; ++i)
             for (int j = 0; j < this.height; ++j)
                 this.tiles[i][j] = Tile.WALL;
-        this.tiles[this.width - 1][this.height - 1] = Tile.FLOOR;
         dfsBuilder(this.width - 1, this.height - 2, 0, 1);
         this.tiles[0][1] = Tile.FLOOR;
         return this;
@@ -124,7 +123,6 @@ public class WorldBuilder {
             int xx = x + d[0];
             int yy = y + d[1];
             if (xx > 0 && xx < this.width - 1 && yy > 0 && yy < this.height - 1 && !visited[xx][yy] && check(xx, yy)) {
-                visited[xx][yy] = true;
                 dfsBuilder(xx, yy, dstX, dstY);
             }
         }
