@@ -1,5 +1,9 @@
 package world;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 /*
@@ -33,6 +37,7 @@ public class WorldBuilder {
         this.width = width;
         this.height = height;
         this.tiles = new Tile[width][height];
+        this.visited = new boolean[width][height];
     }
 
     public World build() {
@@ -93,7 +98,52 @@ public class WorldBuilder {
         return this;
     }
 
+    private WorldBuilder randomizeMaze() {
+        for (int i = 0; i < this.width; ++i)
+            for (int j = 0; j < this.height; ++j)
+                this.tiles[i][j] = Tile.WALL;
+        this.tiles[0][0] = Tile.FLOOR;
+        this.tiles[this.width - 1][this.height - 1] = Tile.FLOOR;
+        dfsBuilder(this.width - 1, this.height - 2, 0, 1);
+        return this;
+    }
+
+    private static List<int[]> ds = new ArrayList<int[]>(
+            Arrays.asList(new int[][] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }));
+
+    private boolean[][] visited;
+
+    private void dfsBuilder(int x, int y, int dstX, int dstY) {
+        visited[x][y] = true;
+        this.tiles[x][y] = Tile.FLOOR;
+        if (x == dstX && y == dstY + 1)
+            return;
+
+        Collections.shuffle(ds);
+        for (int[] d : ds) {
+            int xx = x + d[0];
+            int yy = y + d[1];
+            if (xx > 0 && xx < this.width - 1 && yy > 0 && yy < this.height - 1 && !visited[xx][yy] && check(xx, yy)) {
+                visited[xx][yy] = true;
+                this.tiles[xx][yy] = Tile.FLOOR;
+                dfsBuilder(xx, yy, dstX, dstY);
+            }
+        }
+    }
+
+    private boolean check(int x, int y) {
+        int temp_sum = 0;
+        int[][] ds = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+        for (int[] d : ds)
+            temp_sum += this.tiles[x + d[0]][y + d[1]] == Tile.WALL ? 1 : 0;
+        return temp_sum >= 3;
+    }
+
     public WorldBuilder makeCaves() {
         return randomizeTiles().smooth(8);
+    }
+
+    public WorldBuilder makeMaze() {
+        return this.randomizeMaze();
     }
 }
