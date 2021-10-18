@@ -57,7 +57,7 @@ public class PlayScreen implements Screen {
     }
 
     private void createWorld() {
-        world = new WorldBuilder(90, 31).makeCaves().build();
+        world = new WorldBuilder(90, 31).makeMaze().build();
     }
 
     private void displayTiles(AsciiPanel terminal, int left, int top) {
