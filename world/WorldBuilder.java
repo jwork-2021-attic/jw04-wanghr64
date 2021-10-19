@@ -104,6 +104,7 @@ public class WorldBuilder {
                 this.tiles[i][j] = Tile.WALL;
         dfsBuilder(this.width - 1, this.height - 2, 0, 1);
         this.tiles[0][1] = Tile.FLOOR;
+        this.tiles[1][1] = Tile.FLOOR;
         return this;
     }
 
