@@ -24,7 +24,6 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.plaf.basic.BasicTreeUI.TreeIncrementAction;
 
 /**
  *
@@ -129,13 +128,10 @@ public class PlayScreen implements Screen {
         displayTiles(terminal, getScrollX(), getScrollY());
         // Player
         terminal.write(player.glyph(), player.x() - getScrollX(), player.y() - getScrollY(), player.color());
-        // Stats
-        // String stats = String.format("%3d/%3d hp", player.hp(), player.maxHP());
-        // terminal.write(stats, 1, 25);
         String hint = "Press 'C' to cheat.";
-        terminal.write(hint, 1, 25);
+        terminal.write(hint, 1, 27, Color.DARK_GRAY);
         if (cheatMode)
-            terminal.write("CHEAT MODE ON!!!!", 15, 28);
+            terminal.write("CHEAT MODE ON!!!!", 23, 27, Color.RED);
         // Messages
         displayMessages(terminal, this.messages);
     }
@@ -149,6 +145,8 @@ public class PlayScreen implements Screen {
                     route = new MazeRouter(world, player.x(), player.y(), 89, 29).getRoute();
                 break;
             case KeyEvent.VK_RIGHT:
+                if (player.x() == this.world.width() - 1 && player.y() == this.world.height() - 2)
+                    return new WinScreen();
                 player.moveBy(1, 0);
                 if (cheatMode)
                     route = new MazeRouter(world, player.x(), player.y(), 89, 29).getRoute();
