@@ -23,7 +23,8 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
+
+import javax.swing.plaf.basic.BasicTreeUI.TreeIncrementAction;
 
 /**
  *
@@ -38,6 +39,7 @@ public class PlayScreen implements Screen {
     private List<String> messages;
     private List<String> oldMessages;
     private List<int[]> route;
+    private boolean cheatMode;
 
     public PlayScreen() {
         this.screenWidth = 80;
@@ -48,15 +50,14 @@ public class PlayScreen implements Screen {
 
         CreatureFactory creatureFactory = new CreatureFactory(this.world);
         createCreatures(creatureFactory);
-        route = new MazeRouter(world, 0, 1, 89, 29).getRoute();
     }
 
     private void createCreatures(CreatureFactory creatureFactory) {
         this.player = creatureFactory.newPlayer(this.messages, 0, 1);
 
-        for (int i = 0; i < 8; i++) {
-            creatureFactory.newFungus();
-        }
+        /*
+         * for (int i = 0; i < 8; i++) { creatureFactory.newFungus(); }
+         */
     }
 
     private void createWorld() {
@@ -87,15 +88,30 @@ public class PlayScreen implements Screen {
             }
         }
 
-        for (int[] r : route) {
-            int xx = r[0];
-            int yy = r[1];
-            if (xx >= left && xx < left + screenWidth && yy >= top && yy < top + screenHeight)
-                terminal.write(world.glyph(xx, yy), xx - left, yy - top, Color.PINK);
-        }
+        // Show Route
+        if (cheatMode)
+            for (int i = 0; i < route.size(); ++i) {
+                int xx = route.get(i)[0];
+                int yy = route.get(i)[1];
+                int dx = (i == 0) ? xx - 0 : xx - route.get(i - 1)[0];
+                int dy = (i == 0) ? yy - 0 : yy - route.get(i - 1)[1];
+                char arrow = 0;
+                if (dx == 1 && dy == 0)
+                    arrow = 26;
+                else if (dx == -1 && dy == 0)
+                    arrow = 27;
+                else if (dx == 0 && dy == 1)
+                    arrow = 25;
+                else
+                    arrow = 24;
+                if (xx >= left && xx < left + screenWidth && yy >= top && yy < top + screenHeight)
+                    terminal.write(arrow, xx - left, yy - top, Color.PINK);
+
+            }
 
         // Creatures can choose their next action now
         world.update();
+
     }
 
     private void displayMessages(AsciiPanel terminal, List<String> messages) {
@@ -114,8 +130,12 @@ public class PlayScreen implements Screen {
         // Player
         terminal.write(player.glyph(), player.x() - getScrollX(), player.y() - getScrollY(), player.color());
         // Stats
-        String stats = String.format("%3d/%3d hp", player.hp(), player.maxHP());
-        terminal.write(stats, 1, 23);
+        // String stats = String.format("%3d/%3d hp", player.hp(), player.maxHP());
+        // terminal.write(stats, 1, 25);
+        String hint = "Press 'C' to cheat.";
+        terminal.write(hint, 1, 25);
+        if (cheatMode)
+            terminal.write("CHEAT MODE ON!!!!", 15, 28);
         // Messages
         displayMessages(terminal, this.messages);
     }
@@ -125,15 +145,28 @@ public class PlayScreen implements Screen {
         switch (key.getKeyCode()) {
             case KeyEvent.VK_LEFT:
                 player.moveBy(-1, 0);
+                if (cheatMode)
+                    route = new MazeRouter(world, player.x(), player.y(), 89, 29).getRoute();
                 break;
             case KeyEvent.VK_RIGHT:
                 player.moveBy(1, 0);
+                if (cheatMode)
+                    route = new MazeRouter(world, player.x(), player.y(), 89, 29).getRoute();
                 break;
             case KeyEvent.VK_UP:
                 player.moveBy(0, -1);
+                if (cheatMode)
+                    route = new MazeRouter(world, player.x(), player.y(), 89, 29).getRoute();
                 break;
             case KeyEvent.VK_DOWN:
                 player.moveBy(0, 1);
+                if (cheatMode)
+                    route = new MazeRouter(world, player.x(), player.y(), 89, 29).getRoute();
+                break;
+            case KeyEvent.VK_C:
+                this.cheatMode = !this.cheatMode;
+                if (cheatMode)
+                    route = new MazeRouter(world, player.x(), player.y(), 89, 29).getRoute();
                 break;
         }
         return this;
