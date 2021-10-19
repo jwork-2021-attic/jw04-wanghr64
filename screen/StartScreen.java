@@ -27,8 +27,15 @@ public class StartScreen extends RestartScreen {
 
     @Override
     public void displayOutput(AsciiPanel terminal) {
-        terminal.write("This is the start screen.", 0, 0);
-        terminal.write("Press ENTER to continue...", 0, 1);
+        terminal.write("    __  __        _        ____      ____   ", 16, 3);
+        terminal.write("   F  \\/  ]      /.\\      [__  '.   F ___J  ", 16, 4);
+        terminal.write("  J |\\__/| L    //_\\\\     `--7 .'  J |___:  ", 16, 5);
+        terminal.write("  | |`--'| |   / ___ \\     .'.'.'  | _____| ", 16, 6);
+        terminal.write("  F L    J J  / L___J \\  .' (_(__  F L____: ", 16, 7);
+        terminal.write(" J__L    J__LJ__L   J__LJ________LJ________L", 16, 8);
+        terminal.write(" |__L    J__||__L   J__||________||________|", 16, 9);
+        terminal.write("                                            ", 16, 10);
+        terminal.write("..Press Enter to start..", 27, 14);
     }
 
 }
